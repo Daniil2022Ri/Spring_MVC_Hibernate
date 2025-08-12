@@ -2,46 +2,46 @@ package org.example.controller;
 
 import org.example.model.User;
 import org.example.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import java.util.Map;
 
 @Controller
-@RequestMapping("/users")
 public class UserController {
+    @Autowired
+    private UserService userService;
 
-    private final UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    @RequestMapping("/users")
+    public String listUsers(Map<String , Object> map){
+        map.put("user" , new User());
+        map.put("usersList" , userService.listUser());
+
+        return "user";
     }
 
-    @GetMapping
-    public String list(Model model) {
-        model.addAttribute("users", userService.getAllUsers());
-        return "users";
-    }
-
-    @PostMapping("/create")
-    public String create(@RequestParam String name, @RequestParam String email) {
-        userService.createUser(name, email);
+    @RequestMapping("/")
+    public String home() {
         return "redirect:/users";
     }
 
-    @PostMapping("/update")
-    public String update(@RequestParam Long id,
-                         @RequestParam String name,
-                         @RequestParam String email) {
-        userService.updateUser(id, name, email);
+    @RequestMapping(value ="/add" , method = RequestMethod.POST)
+    public String addUser(@ModelAttribute("user") User user , BindingResult result){
+        userService.addUser(user);
         return "redirect:/users";
     }
 
-    @PostMapping("/delete")
-    public String delete(@RequestParam Long id) {
-        userService.deleteUser(id);
-        return "redirect:/users";
+    @RequestMapping("/delete/{userId}")
+    public String deleteUser(@PathVariable("userId") Integer userid) {
+
+        userService.remove(userid);
+
+        return "redirect:/index";
     }
 }

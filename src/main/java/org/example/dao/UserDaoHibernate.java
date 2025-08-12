@@ -2,42 +2,47 @@ package org.example.dao;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import org.example.model.User;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public class UserDaoHibernate {
+public class UserDaoHibernate implements UserDao{
+
+    @Autowired
+    private SessionFactory sessionFactory;
 
     @PersistenceContext
     private EntityManager entityManager;
 
-    public Long save(User user) {
-        entityManager.persist(user);
-        return user.getId();
+
+    @Override
+    public void addUser(User user) {
+        sessionFactory.getCurrentSession().save(user);
     }
 
-    public User findById(Long id) {
-        return entityManager.find(User.class, id);
+    @Override
+    public List<User> listUsers() {
+        return sessionFactory.getCurrentSession().createQuery("from User").list();
     }
 
-    public List<User> findAll() {
-        return entityManager.createQuery("select u from User u", User.class).getResultList();
+    @Override
+    public void removeUser(long id) {
+        User user = sessionFactory.getCurrentSession().load(User.class , id);
+        if(null != user){sessionFactory.getCurrentSession().delete(user);}
     }
 
-    public void update(Long id, String username, String email) {
-        User user = entityManager.find(User.class, id);
-        if (user != null) {
-            user.setUsername(username);
-            user.setEmail(email);
-        }
+    @Override
+    public void getAllUsers(User user) {
+
     }
 
-    public void delete(Long id) {
-        User user = entityManager.find(User.class, id);
-        if (user != null) {
-            entityManager.remove(user);
-        }
+    @Override
+    public void wathingUsersTable(User user) {
+
     }
 }
