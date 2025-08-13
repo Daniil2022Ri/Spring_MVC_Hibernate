@@ -10,5 +10,5 @@ public interface UserService {
 
     public List<User> listUser();
 
-    public void remove(long id);
+    public void removeUser(long id);
 }

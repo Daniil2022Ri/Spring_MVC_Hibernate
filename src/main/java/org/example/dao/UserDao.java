@@ -15,4 +15,6 @@ public interface UserDao {
     public void getAllUsers(User user);
 
     public void wathingUsersTable(User user);
+
+    User getUserById(long id);
 }

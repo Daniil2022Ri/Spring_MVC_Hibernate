@@ -13,27 +13,24 @@ import java.util.List;
 @Repository
 public class UserDaoHibernate implements UserDao{
 
-    @Autowired
-    private SessionFactory sessionFactory;
-
     @PersistenceContext
     private EntityManager entityManager;
 
 
     @Override
     public void addUser(User user) {
-        sessionFactory.getCurrentSession().save(user);
+        entityManager.merge(user);
+        entityManager.flush();
     }
 
     @Override
     public List<User> listUsers() {
-        return sessionFactory.getCurrentSession().createQuery("from User").list();
+        return entityManager.createQuery("from User" , User.class).getResultList();
     }
 
     @Override
     public void removeUser(long id) {
-        User user = sessionFactory.getCurrentSession().load(User.class , id);
-        if(null != user){sessionFactory.getCurrentSession().delete(user);}
+
     }
 
     @Override
@@ -44,5 +41,10 @@ public class UserDaoHibernate implements UserDao{
     @Override
     public void wathingUsersTable(User user) {
 
+    }
+
+    @Override
+    public User getUserById(long id) {
+        return null;
     }
 }
